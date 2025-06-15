@@ -21,7 +21,7 @@ df.loc[df['Interest_Rate'] > 34, 'Interest_Rate'] = 14
 df.loc[(df['Num_of_Loan'] < 0) | (df['Num_of_Loan'] > 9), 'Num_of_Loan'] = 0
 
 # --- Sidebar Navigation ---
-pages = ["KPIs", "Customer Demographics", "Monthly Financial Behaviour", "Credit Payment & Loan Behaviour"]
+pages = ["KPIs", "Customer Demographics", "Monthly Financial Behaviour", "Credit Payment & Loan Behaviour","Correlation Heatmap"]
 selection = st.sidebar.radio("Navigation", pages)
 
 # --- KPIs ---
@@ -216,4 +216,37 @@ elif selection == "Credit Payment & Loan Behaviour":
            colors=['lightskyblue', 'plum', 'lightsalmon'], startangle=140)
     ax.set_title('Total Customers by Payment Value')
     ax.axis('equal')
+    st.pyplot(fig)
+
+
+# --- Correlation Heatmap ---
+elif selection == "Correlation Heatmap":
+    st.title("📈 Correlation Heatmap")
+
+    # Label encoding
+    df['Occupation'] = df['Occupation'].map({
+        'Accountant': 0, 'Architect': 1, 'Developer': 2, 'Doctor': 3,
+        'Engineer': 4, 'Entrepreneur': 5, 'Journalist': 6, 'Lawyer': 7,
+        'Manager': 8, 'Mechanic': 9, 'Media_Manager': 10, 'Musician': 11,
+        'Scientist': 12, 'Teacher': 13, 'Writer': 14
+    })
+    df['Income_Category'] = df['Income_Category'].map({
+        'High Income': 0, 'Low Income': 1, 'Lower Middle Income': 2, 'Upper Middle Income': 3
+    })
+    df['Age_Category'] = df['Age_Category'].map({
+        'Adults': 0, 'Middle-Aged Adults': 1, 'Older Adults': 2, 'Teenagers': 3, 'Young Adults': 4
+    })
+    df['Spending_Level'] = df['Spending_Level'].map({'High': 0, 'Low': 1})
+
+    # Correlation matrix
+    cols = [
+        'Outstanding_Debt', 'Monthly_Inhand_Salary', 'Total_EMI_per_month',
+        'Credit_Utilization_Ratio', 'Credit_History_Age_Months', 'Delay_from_due_date',
+        'Occupation', 'Income_Category', 'Age_Category', 'Spending_Level'
+    ]
+    corr_matrix = df[cols].corr()
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', linewidths=0.5, ax=ax)
+    ax.set_title("Correlation Heatmap")
     st.pyplot(fig)
