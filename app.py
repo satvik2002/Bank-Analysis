@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# --- Page config ---
+st.set_page_config(page_title="Customer Insights Dashboard", layout="wide")
 
 # --- Login Setup ---
 if "logged_in" not in st.session_state:
@@ -23,9 +25,6 @@ if not st.session_state.logged_in:
 
 # --- Logout ---
 st.sidebar.button("🚪 Logout", on_click=lambda: st.session_state.update({"logged_in": False}))
-
-# --- Page config ---
-st.set_page_config(page_title="Customer Insights Dashboard", layout="wide")
 
 # --- Load Data ---
 @st.cache_data
