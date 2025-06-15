@@ -160,7 +160,7 @@ elif selection == "Monthly Financial Behaviour":
     ax.plot(avg_ratio.index, avg_ratio, color='#3399ff', marker='o')
     ax.fill_between(avg_ratio.index, avg_ratio, color='#add8ff', alpha=0.5)
     ax.set(title='Avg Credit Utilization Ratio by Month', xlabel='Month', ylabel='Avg Utilization')
-    ax.set_ylim(32, None)
+    ax.set_ylim(32, 33)
     for i, val in enumerate(avg_ratio):
         ax.text(i, val + 0.05, f'{val:.3f}', ha='center')
     st.pyplot(fig)
@@ -171,7 +171,7 @@ elif selection == "Monthly Financial Behaviour":
     ax.plot(avg_delay.index, avg_delay, color='royalblue', marker='o')
     ax.fill_between(avg_delay.index, avg_delay, color='lightblue', alpha=0.5)
     ax.set(title='Avg Delayed Payments by Month', xlabel='Month', ylabel='Avg Delays')
-    ax.set_ylim(13, None)
+    ax.set_ylim(13.6, 14.4)
     for i, val in enumerate(avg_delay):
         ax.text(i, val + 0.01, f'{val:.2f}', ha='center')
     st.pyplot(fig)
