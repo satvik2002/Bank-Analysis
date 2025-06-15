@@ -8,18 +8,17 @@ st.set_page_config(page_title="Customer Insights Dashboard", layout="wide")
 
 # --- Load Data ---
 @st.cache_data
-
 def load_data():
     return pd.read_csv("Banking Data Set - Marketing.csv")
 
 df = load_data()
 
 # --- Sidebar Navigation ---
-pages = ["Page 1: KPIs", "Page 2: Customer Demographics", "Page 3: Monthly Financial Behaviour", "Page 4: Credit Payment & Loan Behaviour"]
+pages = ["KPIs", "Customer Demographics", "Monthly Financial Behaviour", "Credit Payment & Loan Behaviour"]
 selection = st.sidebar.radio("Navigation", pages)
 
-# --- Page 1: KPIs ---
-if selection == "Page 1: KPIs":
+# --- KPIs ---
+if selection == "KPIs":
     st.title("📊 Key Performance Indicators")
 
     col1, col2, col3 = st.columns(3)
@@ -36,8 +35,8 @@ if selection == "Page 1: KPIs":
     with col5:
         st.metric("Avg Credit Utilization", f"{df['Credit_Utilization_Ratio'].mean():.2f}%")
 
-# --- Page 2: Customer Demographics ---
-elif selection == "Page 2: Customer Demographics":
+# --- Customer Demographics ---
+elif selection == "Customer Demographics":
     st.title("👥 Customer Demographics")
 
     st.subheader("Total Customers by Age Category")
@@ -99,8 +98,8 @@ elif selection == "Page 2: Customer Demographics":
     ax.set_ylim(0, top10.max() + 20000)
     st.pyplot(fig)
 
-# --- Page 3: Monthly Financial Behaviour ---
-elif selection == "Page 3: Monthly Financial Behaviour":
+# --- Monthly Financial Behaviour ---
+elif selection == "Monthly Financial Behaviour":
     st.title("📆 Monthly Financial Behaviour")
     month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August']
 
@@ -144,8 +143,8 @@ elif selection == "Page 3: Monthly Financial Behaviour":
         ax.text(i, val + 0.01, f'{val:.2f}', ha='center')
     st.pyplot(fig)
 
-# --- Page 4: Credit Payment & Loan Behaviour ---
-elif selection == "Page 4: Credit Payment & Loan Behaviour":
+# --- Credit Payment & Loan Behaviour ---
+elif selection == "Credit Payment & Loan Behaviour":
     st.title("💳 Credit & Loan Behaviour")
 
     st.subheader("Customer Count by Num of Loan")
