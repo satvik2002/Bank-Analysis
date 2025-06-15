@@ -13,6 +13,13 @@ def load_data():
 
 df = load_data()
 
+# --- Data Cleaning ---
+# Update Interest_Rate: Set to 14 if > 34
+df.loc[df['Interest_Rate'] > 34, 'Interest_Rate'] = 14
+
+# Update Num_of_Loan: Set to 0 if < 0 or > 9
+df.loc[(df['Num_of_Loan'] < 0) | (df['Num_of_Loan'] > 9), 'Num_of_Loan'] = 0
+
 # --- Sidebar Navigation ---
 pages = ["KPIs", "Customer Demographics", "Monthly Financial Behaviour", "Credit Payment & Loan Behaviour"]
 selection = st.sidebar.radio("Navigation", pages)
