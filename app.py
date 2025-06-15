@@ -25,7 +25,8 @@ if selection == "KPIs":
     with col1:
         st.metric("Total Customers", f"{df['Customer_ID'].nunique():,}")
     with col2:
-        st.metric("Avg Credit Score", f"{df['Credit_Score'].mean():.2f}")
+        most_common_score = df['Credit_Score'].mode()[0]
+        st.metric("Most Common Credit Score", most_common_score)
     with col3:
         st.metric("Avg Annual Income", f"₹{df['Annual_Income'].mean():,.0f}")
 
@@ -58,9 +59,9 @@ elif selection == "Customer Demographics":
     credit_score_counts = credit_score_counts.sort_values(by='Credit_Score')
     fig, ax = plt.subplots()
     ax.plot(credit_score_counts['Credit_Score'], credit_score_counts['Customer_Count'],
-             color='dodgerblue', marker='o', linewidth=2)
+            color='dodgerblue', marker='o', linewidth=2)
     ax.fill_between(credit_score_counts['Credit_Score'], credit_score_counts['Customer_Count'],
-                     color='dodgerblue', alpha=0.2)
+                    color='dodgerblue', alpha=0.2)
     for x, y in zip(credit_score_counts['Credit_Score'], credit_score_counts['Customer_Count']):
         label = f'{y/1000:.1f}K' if y >= 1000 else str(int(y))
         ax.text(x, y + 200, label, ha='center', fontsize=9)
@@ -100,7 +101,7 @@ elif selection == "Customer Demographics":
 
 # --- Monthly Financial Behaviour ---
 elif selection == "Monthly Financial Behaviour":
-    st.title("📆 Monthly Financial Behaviour")
+    st.title("🗖️ Monthly Financial Behaviour")
     month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August']
 
     st.subheader("Average Monthly Balance")
