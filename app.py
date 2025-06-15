@@ -20,21 +20,44 @@ selection = st.sidebar.radio("Navigation", pages)
 # --- KPIs ---
 if selection == "KPIs":
     st.title("📊 Key Performance Indicators")
+    # Compute all KPIs
+    total_customers = df['Customer_ID'].nunique()
+    total_months = df['Month'].nunique()
+    avg_bank_accounts = round(df['Num_Bank_Accounts'].mean())
+    average_age = round(df['Age'].mean())
+    most_common_age_category = df['Age_Category'].value_counts().idxmax()
+    avg_annual_income = round(df['Annual_Income'].mean(), 1)
+    on_time_payment_percentage = round((df['Delay_from_due_date'] == 0).sum() * 100.0 / len(df), 2)
+    avg_credit_history = round(df['Credit_History_Age_Months'].mean())
+    total_loans = df.groupby('Customer_ID')['Num_of_Loan'].max().sum()
+    avg_emi = round(df['Total_EMI_per_month'].mean(), 2)
+    max_debt = df['Outstanding_Debt'].max()
+    avg_interest_rate = round(df['Interest_Rate'].mean(), 2)
+    avg_delayed_payments = round(df['Num_of_Delayed_Payment'].mean())
+    max_loans_by_customer = df['Num_of_Loan'].max()
 
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Total Customers", f"{df['Customer_ID'].nunique():,}")
-    with col2:
-        most_common_score = df['Credit_Score'].mode()[0]
-        st.metric("Most Common Credit Score", most_common_score)
-    with col3:
-        st.metric("Avg Annual Income", f"₹{df['Annual_Income'].mean():,.0f}")
+    # Display KPIs
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Total Customers", f"{total_customers:,}")
+    col2.metric("Total Months", total_months)
+    col3.metric("Avg Bank Accounts", avg_bank_accounts)
+    col4.metric("Avg Age", average_age)
 
-    col4, col5 = st.columns(2)
-    with col4:
-        st.metric("Avg Monthly Balance", f"{df['Monthly_Balance'].mean():.2f}")
-    with col5:
-        st.metric("Avg Credit Utilization", f"{df['Credit_Utilization_Ratio'].mean():.2f}%")
+    col5, col6, col7, col8 = st.columns(4)
+    col5.metric("Common Age Category", most_common_age_category)
+    col6.metric("Avg Annual Income", f"₹{avg_annual_income:,.0f}")
+    col7.metric("% On-Time Payments", f"{on_time_payment_percentage}%")
+    col8.metric("Avg Credit History", f"{avg_credit_history} months")
+
+    col9, col10, col11, col12 = st.columns(4)
+    col9.metric("Total Loans (Unique)", total_loans)
+    col10.metric("Avg EMI", f"₹{avg_emi:,.2f}")
+    col11.metric("Max Outstanding Debt", f"₹{max_debt:,.0f}")
+    col12.metric("Avg Interest Rate", f"{avg_interest_rate}%")
+
+    col13, col14 = st.columns(2)
+    col13.metric("Avg Delayed Payments", avg_delayed_payments)
+    col14.metric("Max Loans by 1 Customer", max_loans_by_customer)
 
 # --- Customer Demographics ---
 elif selection == "Customer Demographics":
