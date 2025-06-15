@@ -40,6 +40,21 @@ df.loc[df['Interest_Rate'] > 34, 'Interest_Rate'] = 14
 # Update Num_of_Loan: Set to 0 if < 0 or > 9
 df.loc[(df['Num_of_Loan'] < 0) | (df['Num_of_Loan'] > 9), 'Num_of_Loan'] = 0
 
+# --- Filters (Slicers) ---
+st.sidebar.header("🔎 Filters")
+selected_month = st.sidebar.selectbox("Select Month", options=["All"] + sorted(df['Month'].dropna().unique().tolist()))
+selected_occupation = st.sidebar.selectbox("Select Occupation", options=["All"] + sorted(df['Occupation'].dropna().unique().tolist()))
+selected_loan_type = st.sidebar.selectbox("Select Type of Loan", options=["All"] + sorted(df['Type_of_Loan'].dropna().unique().tolist())) if 'Type_of_Loan' in df.columns else "All"
+
+# Apply filters
+df_filtered = df.copy()
+if selected_month != "All":
+    df_filtered = df_filtered[df_filtered['Month'] == selected_month]
+if selected_occupation != "All":
+    df_filtered = df_filtered[df_filtered['Occupation'] == selected_occupation]
+if selected_loan_type != "All" and 'Type_of_Loan' in df_filtered.columns:
+    df_filtered = df_filtered[df_filtered['Type_of_Loan'] == selected_loan_type]
+    
 # --- Sidebar Navigation ---
 pages = ["KPIs", "Customer Demographics", "Monthly Financial Behaviour", "Credit Payment & Loan Behaviour","Correlation Heatmap"]
 selection = st.sidebar.radio("Navigation", pages)
