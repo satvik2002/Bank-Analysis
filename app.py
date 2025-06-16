@@ -42,9 +42,10 @@ df.loc[(df['Num_of_Loan'] < 0) | (df['Num_of_Loan'] > 9), 'Num_of_Loan'] = 0
 
 # --- Sidebar Filters ---
 st.sidebar.header("🔎 Filters")
-month_filter = st.sidebar.selectbox("Select Month", options=["All"] + sorted(df['Month'].dropna().unique().tolist()))
-occupation_filter = st.sidebar.selectbox("Select Occupation", options=["All"] + sorted(df['Occupation'].dropna().unique().tolist()))
-type_of_loan_filter = st.sidebar.selectbox("Select Type of Loan", options=["All"] + sorted(df['Type_of_Loan'].dropna().unique().tolist()) if 'Type_of_Loan' in df.columns else ["All"])
+month_filter = st.sidebar.multiselect("Select Month(s)", options=sorted(df['Month'].dropna().unique().tolist()), default=sorted(df['Month'].dropna().unique().tolist()))
+occupation_filter = st.sidebar.multiselect("Select Occupation(s)", options=sorted(df['Occupation'].dropna().unique().tolist()), default=sorted(df['Occupation'].dropna().unique().tolist()))
+type_of_loan_filter = st.sidebar.multiselect("Select Type(s) of Loan", options=sorted(df['Type_of_Loan'].dropna().unique().tolist()) if 'Type_of_Loan' in df.columns else [], default=sorted(df['Type_of_Loan'].dropna().unique().tolist()) if 'Type_of_Loan' in df.columns else [])
+
 
 # --- Apply Filters ---
 df_filtered = df.copy()
