@@ -40,20 +40,20 @@ df.loc[df['Interest_Rate'] > 34, 'Interest_Rate'] = 14
 # Update Num_of_Loan: Set to 0 if < 0 or > 9
 df.loc[(df['Num_of_Loan'] < 0) | (df['Num_of_Loan'] > 9), 'Num_of_Loan'] = 0
 
-# --- Filters (Slicers) ---
+# --- Sidebar Filters ---
 st.sidebar.header("🔎 Filters")
-selected_month = st.sidebar.selectbox("Select Month", options=["All"] + sorted(df['Month'].dropna().unique().tolist()))
-selected_occupation = st.sidebar.selectbox("Select Occupation", options=["All"] + sorted(df['Occupation'].dropna().unique().tolist()))
-selected_loan_type = st.sidebar.selectbox("Select Type of Loan", options=["All"] + sorted(df['Type_of_Loan'].dropna().unique().tolist())) if 'Type_of_Loan' in df.columns else "All"
+month_filter = st.sidebar.selectbox("Select Month", options=["All"] + sorted(df['Month'].dropna().unique().tolist()))
+occupation_filter = st.sidebar.selectbox("Select Occupation", options=["All"] + sorted(df['Occupation'].dropna().unique().tolist()))
+type_of_loan_filter = st.sidebar.selectbox("Select Type of Loan", options=["All"] + sorted(df['Type_of_Loan'].dropna().unique().tolist()) if 'Type_of_Loan' in df.columns else ["All"])
 
-# Apply filters
+# --- Apply Filters ---
 df_filtered = df.copy()
-if selected_month != "All":
-    df_filtered = df_filtered[df_filtered['Month'] == selected_month]
-if selected_occupation != "All":
-    df_filtered = df_filtered[df_filtered['Occupation'] == selected_occupation]
-if selected_loan_type != "All" and 'Type_of_Loan' in df_filtered.columns:
-    df_filtered = df_filtered[df_filtered['Type_of_Loan'] == selected_loan_type]
+if month_filter != "All":
+    df_filtered = df_filtered[df_filtered['Month'] == month_filter]
+if occupation_filter != "All":
+    df_filtered = df_filtered[df_filtered['Occupation'] == occupation_filter]
+if type_of_loan_filter != "All" and 'Type_of_Loan' in df_filtered.columns:
+    df_filtered = df_filtered[df_filtered['Type_of_Loan'] == type_of_loan_filter]
     
 # --- Sidebar Navigation ---
 pages = ["KPIs", "Customer Demographics", "Monthly Financial Behaviour", "Credit Payment & Loan Behaviour","Correlation Heatmap"]
@@ -63,20 +63,20 @@ selection = st.sidebar.radio("Navigation", pages)
 if selection == "KPIs":
     st.title("📊 Key Performance Indicators")
     # Compute all KPIs
-    total_customers = df['Customer_ID'].nunique()
-    total_months = df['Month'].nunique()
-    avg_bank_accounts = round(df['Num_Bank_Accounts'].mean())
-    average_age = round(df['Age'].mean())
-    most_common_age_category = df['Age_Category'].value_counts().idxmax()
-    avg_annual_income = round(df['Annual_Income'].mean(), 1)
-    on_time_payment_percentage = round((df['Delay_from_due_date'] == 0).sum() * 100.0 / len(df), 2)
-    avg_credit_history = round(df['Credit_History_Age_Months'].mean())
-    total_loans = df.groupby('Customer_ID')['Num_of_Loan'].max().sum()
-    avg_emi = round(df['Total_EMI_per_month'].mean(), 2)
-    max_debt = df['Outstanding_Debt'].max()
-    avg_interest_rate = round(df['Interest_Rate'].mean(), 2)
-    avg_delayed_payments = round(df['Num_of_Delayed_Payment'].mean())
-    max_loans_by_customer = df['Num_of_Loan'].max()
+    total_customers = df_filtered['Customer_ID'].nunique()
+    total_months = df_filtered['Month'].nunique()
+    avg_bank_accounts = round(df_filtered['Num_Bank_Accounts'].mean())
+    average_age = round(df_filtered['Age'].mean())
+    most_common_age_category = df_filtered['Age_Category'].value_counts().idxmax()
+    avg_annual_income = round(df_filtered['Annual_Income'].mean(), 1)
+    on_time_payment_percentage = round((df_filtered['Delay_from_due_date'] == 0).sum() * 100.0 / len(df_filtered_filtered), 2)
+    avg_credit_history = round(df_filtered['Credit_History_Age_Months'].mean())
+    total_loans = df_filtered.groupby('Customer_ID')['Num_of_Loan'].max().sum()
+    avg_emi = round(df_filtered['Total_EMI_per_month'].mean(), 2)
+    max_debt = df_filtered['Outstanding_Debt'].max()
+    avg_interest_rate = round(df_filtered['Interest_Rate'].mean(), 2)
+    avg_delayed_payments = round(df_filtered['Num_of_Delayed_Payment'].mean())
+    max_loans_by_customer = df_filtered['Num_of_Loan'].max()
 
     # Display KPIs
     col1, col2, col3, col4 = st.columns(4)
@@ -106,7 +106,7 @@ elif selection == "Customer Demographics":
     st.title("👥 Customer Demographics")
 
     st.subheader("Total Customers by Age Category")
-    age_counts = df.groupby('Age_Category')['Customer_ID'].nunique().sort_values(ascending=False)
+    age_counts = df_filtered.groupby('Age_Category')['Customer_ID'].nunique().sort_values(ascending=False)
     fig, ax = plt.subplots()
     bars = ax.bar(age_counts.index, age_counts.values, color='dodgerblue')
     for bar in bars:
@@ -120,7 +120,7 @@ elif selection == "Customer Demographics":
     st.pyplot(fig)
 
     st.subheader("Total Unique Customers by Credit Score")
-    credit_score_counts = df.groupby('Credit_Score')['Customer_ID'].nunique().reset_index(name='Customer_Count')
+    credit_score_counts = df_filtered.groupby('Credit_Score')['Customer_ID'].nunique().reset_index(name='Customer_Count')
     credit_score_counts = credit_score_counts.sort_values(by='Credit_Score')
     fig, ax = plt.subplots()
     ax.plot(credit_score_counts['Credit_Score'], credit_score_counts['Customer_Count'],
@@ -138,7 +138,7 @@ elif selection == "Customer Demographics":
     st.pyplot(fig)
 
     st.subheader("Customer Count by Category")
-    counts = df.groupby('Customer_Category')['Customer_ID'].nunique().sort_values(ascending=False)
+    counts = df_filtered.groupby('Customer_Category')['Customer_ID'].nunique().sort_values(ascending=False)
     fig, ax = plt.subplots()
     wedges, _, autotexts = ax.pie(counts, labels=None,
                                   colors=['deepskyblue', 'navy', 'darkorange', 'purple', 'deeppink'],
@@ -151,7 +151,7 @@ elif selection == "Customer Demographics":
     st.pyplot(fig)
 
     st.subheader("Top 10 Customers by Max Annual Income")
-    top10 = df.groupby('Customer_ID')['Annual_Income'].max().nlargest(10)
+    top10 = df_filtered.groupby('Customer_ID')['Annual_Income'].max().nlargest(10)
     fig, ax = plt.subplots()
     top10.plot(kind='bar', color='#ff7f50', ax=ax)
     ax.set_title('Top 10 Customers by Max Annual Income', pad=20)
@@ -170,7 +170,7 @@ elif selection == "Monthly Financial Behaviour":
     month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August']
 
     st.subheader("Average Monthly Balance")
-    avg_bal = df.groupby('Month')['Monthly_Balance'].mean().reindex(month_order)
+    avg_bal = df_filtered.groupby('Month')['Monthly_Balance'].mean().reindex(month_order)
     fig, ax = plt.subplots()
     ax.plot(avg_bal.index, avg_bal, color='#3399ff', marker='o')
     ax.set_title('Average of Monthly_Balance by Month')
@@ -181,7 +181,7 @@ elif selection == "Monthly Financial Behaviour":
     st.pyplot(fig)
 
     st.subheader("Average Monthly Investment")
-    avg_invest = df.groupby('Month')['Amount_invested_monthly'].mean().reindex(month_order)
+    avg_invest = df_filtered.groupby('Month')['Amount_invested_monthly'].mean().reindex(month_order)
     fig, ax = plt.subplots()
     bars = ax.bar(avg_invest.index, avg_invest, color='#3399ff')
     ax.set(title='Average of Amount Invested Monthly by Month', xlabel='Month', ylabel='Avg Investment')
@@ -190,7 +190,7 @@ elif selection == "Monthly Financial Behaviour":
     st.pyplot(fig)
 
     st.subheader("Average Credit Utilization Ratio")
-    avg_ratio = df.groupby('Month')['Credit_Utilization_Ratio'].mean().reindex(month_order)
+    avg_ratio = df_filtered.groupby('Month')['Credit_Utilization_Ratio'].mean().reindex(month_order)
     fig, ax = plt.subplots()
     ax.plot(avg_ratio.index, avg_ratio, color='#3399ff', marker='o')
     ax.fill_between(avg_ratio.index, avg_ratio, color='#add8ff', alpha=0.5)
@@ -201,7 +201,7 @@ elif selection == "Monthly Financial Behaviour":
     st.pyplot(fig)
 
     st.subheader("Average Delayed Payments")
-    avg_delay = df.groupby('Month')['Num_of_Delayed_Payment'].mean().reindex(month_order)
+    avg_delay = df_filtered.groupby('Month')['Num_of_Delayed_Payment'].mean().reindex(month_order)
     fig, ax = plt.subplots()
     ax.plot(avg_delay.index, avg_delay, color='royalblue', marker='o')
     ax.fill_between(avg_delay.index, avg_delay, color='lightblue', alpha=0.5)
@@ -216,7 +216,7 @@ elif selection == "Credit Payment & Loan Behaviour":
     st.title("💳 Credit & Loan Behaviour")
 
     st.subheader("Customer Count by Num of Loan")
-    loan_filtered = df['Num_of_Loan'].dropna()
+    loan_filtered = df_filtered['Num_of_Loan'].dropna()
     loan_counts = loan_filtered.value_counts().sort_index()
     fig, ax = plt.subplots()
     bars = ax.bar(loan_counts.index.astype(str), loan_counts.values, color='dodgerblue')
@@ -227,7 +227,7 @@ elif selection == "Credit Payment & Loan Behaviour":
     st.pyplot(fig)
 
     st.subheader("Credit Mix Distribution")
-    credit_mix = df.groupby('Credit_Mix')['Customer_ID'].nunique()
+    credit_mix = df_filtered.groupby('Credit_Mix')['Customer_ID'].nunique()
     fig, ax = plt.subplots()
     ax.pie(credit_mix.values, labels=credit_mix.index, autopct='%1.2f%%',
            colors=['deepskyblue', 'lightsalmon', 'skyblue'], startangle=140)
@@ -236,7 +236,7 @@ elif selection == "Credit Payment & Loan Behaviour":
     st.pyplot(fig)
 
     st.subheader("Avg Credit History Months by Age Category")
-    age_credit = df.groupby('Age_Category')['Credit_History_Age_Months'].mean().round(0).sort_values(ascending=False)
+    age_credit = df_filtered.groupby('Age_Category')['Credit_History_Age_Months'].mean().round(0).sort_values(ascending=False)
     fig, ax = plt.subplots()
     ax.plot(age_credit.index, age_credit.values, marker='o', color='royalblue')
     ax.set(title='Avg Credit History Months by Age Category', xlabel='Age Category', ylabel='Avg Months')
@@ -245,7 +245,7 @@ elif selection == "Credit Payment & Loan Behaviour":
     st.pyplot(fig)
 
     st.subheader("Customer Count by Payment Value")
-    payment_value = df.groupby('Payment_Value')['Customer_ID'].nunique()
+    payment_value = df_filtered.groupby('Payment_Value')['Customer_ID'].nunique()
     fig, ax = plt.subplots()
     ax.pie(payment_value.values, labels=payment_value.index, autopct='%1.2f%%',
            colors=['lightskyblue', 'plum', 'lightsalmon'], startangle=140)
@@ -259,19 +259,19 @@ elif selection == "Correlation Heatmap":
     st.title("📈 Correlation Heatmap")
 
     # Label encoding
-    df['Occupation'] = df['Occupation'].map({
+    df_filtered['Occupation'] = df_filtered['Occupation'].map({
         'Accountant': 0, 'Architect': 1, 'Developer': 2, 'Doctor': 3,
         'Engineer': 4, 'Entrepreneur': 5, 'Journalist': 6, 'Lawyer': 7,
         'Manager': 8, 'Mechanic': 9, 'Media_Manager': 10, 'Musician': 11,
         'Scientist': 12, 'Teacher': 13, 'Writer': 14
     })
-    df['Income_Category'] = df['Income_Category'].map({
+    df_filtered['Income_Category'] = df_filtered['Income_Category'].map({
         'High Income': 0, 'Low Income': 1, 'Lower Middle Income': 2, 'Upper Middle Income': 3
     })
-    df['Age_Category'] = df['Age_Category'].map({
+    df_filtered['Age_Category'] = df_filtered['Age_Category'].map({
         'Adults': 0, 'Middle-Aged Adults': 1, 'Older Adults': 2, 'Teenagers': 3, 'Young Adults': 4
     })
-    df['Spending_Level'] = df['Spending_Level'].map({'High': 0, 'Low': 1})
+    df_filtered['Spending_Level'] = df_filtered['Spending_Level'].map({'High': 0, 'Low': 1})
 
     # Correlation matrix
     cols = [
@@ -279,7 +279,7 @@ elif selection == "Correlation Heatmap":
         'Credit_Utilization_Ratio', 'Credit_History_Age_Months', 'Delay_from_due_date',
         'Occupation', 'Income_Category', 'Age_Category', 'Spending_Level'
     ]
-    corr_matrix = df[cols].corr()
+    corr_matrix = df_filtered[cols].corr()
 
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', linewidths=0.5, ax=ax)
