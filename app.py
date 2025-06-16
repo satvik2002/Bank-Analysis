@@ -42,19 +42,33 @@ df.loc[(df['Num_of_Loan'] < 0) | (df['Num_of_Loan'] > 9), 'Num_of_Loan'] = 0
 
 # --- Sidebar Filters ---
 st.sidebar.header("🔎 Filters")
-month_filter = st.sidebar.multiselect("Select Month(s)", options=sorted(df['Month'].dropna().unique().tolist()), default=sorted(df['Month'].dropna().unique().tolist()))
-occupation_filter = st.sidebar.multiselect("Select Occupation(s)", options=sorted(df['Occupation'].dropna().unique().tolist()), default=sorted(df['Occupation'].dropna().unique().tolist()))
-type_of_loan_filter = st.sidebar.multiselect("Select Type(s) of Loan", options=sorted(df['Type_of_Loan'].dropna().unique().tolist()) if 'Type_of_Loan' in df.columns else [], default=sorted(df['Type_of_Loan'].dropna().unique().tolist()) if 'Type_of_Loan' in df.columns else [])
+month_filter = st.sidebar.multiselect(
+    "Select Month(s)",
+    options=sorted(df['Month'].dropna().unique().tolist()),
+    default=sorted(df['Month'].dropna().unique().tolist())
+)
 
+occupation_filter = st.sidebar.multiselect(
+    "Select Occupation(s)",
+    options=sorted(df['Occupation'].dropna().unique().tolist()),
+    default=sorted(df['Occupation'].dropna().unique().tolist())
+)
+
+type_of_loan_options = sorted(df['Type_of_Loan'].dropna().unique().tolist()) if 'Type_of_Loan' in df.columns else []
+type_of_loan_filter = st.sidebar.multiselect(
+    "Select Type(s) of Loan",
+    options=type_of_loan_options,
+    default=type_of_loan_options
+)
 
 # --- Apply Filters ---
 df_filtered = df.copy()
-if month_filter != "All":
-    df_filtered = df_filtered[df_filtered['Month'] == month_filter]
-if occupation_filter != "All":
-    df_filtered = df_filtered[df_filtered['Occupation'] == occupation_filter]
-if type_of_loan_filter != "All" and 'Type_of_Loan' in df_filtered.columns:
-    df_filtered = df_filtered[df_filtered['Type_of_Loan'] == type_of_loan_filter]
+if month_filter:
+    df_filtered = df_filtered[df_filtered['Month'].isin(month_filter)]
+if occupation_filter:
+    df_filtered = df_filtered[df_filtered['Occupation'].isin(occupation_filter)]
+if type_of_loan_filter and 'Type_of_Loan' in df_filtered.columns:
+    df_filtered = df_filtered[df_filtered['Type_of_Loan'].isin(type_of_loan_filter)]
     
 # --- Sidebar Navigation ---
 pages = ["KPIs", "Customer Demographics", "Monthly Financial Behaviour", "Credit Payment & Loan Behaviour","Correlation Heatmap"]
