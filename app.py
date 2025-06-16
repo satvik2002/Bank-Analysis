@@ -69,7 +69,7 @@ if selection == "KPIs":
     average_age = round(df_filtered['Age'].mean())
     most_common_age_category = df_filtered['Age_Category'].value_counts().idxmax()
     avg_annual_income = round(df_filtered['Annual_Income'].mean(), 1)
-    on_time_payment_percentage = round((df_filtered['Delay_from_due_date'] == 0).sum() * 100.0 / len(df_filtered_filtered), 2)
+    on_time_payment_percentage = round((df_filtered['Delay_from_due_date'] == 0).sum() * 100.0 / len(df_filtered), 2)
     avg_credit_history = round(df_filtered['Credit_History_Age_Months'].mean())
     total_loans = df_filtered.groupby('Customer_ID')['Num_of_Loan'].max().sum()
     avg_emi = round(df_filtered['Total_EMI_per_month'].mean(), 2)
